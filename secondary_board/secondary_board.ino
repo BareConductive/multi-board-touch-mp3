@@ -73,7 +73,7 @@ void loop(){
   if(thisTriggerValue && !lastTriggerValue){ // rising edge triggered
     sendSerialStatus();
   }
-  lastTriggerValue e= thisTriggerValue;
+  lastTriggerValue = thisTriggerValue;
 }
 
 void processInputs() {
