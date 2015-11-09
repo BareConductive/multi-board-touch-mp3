@@ -24,7 +24,7 @@ Each board must also be powered, although up to 4 boards can share power by comm
 
 ## Wiring diagram
 
-![Wiring Diagram]("https://raw.githubusercontent.com/BareConductive/multi-board-touch-mp3/public/images/7 Touch Boards.png")
+![Wiring Diagram](https://raw.githubusercontent.com/BareConductive/multi-board-touch-mp3/public/images/7 Touch Boards.png)
 
 ## Install
 
