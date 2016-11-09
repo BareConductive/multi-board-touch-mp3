@@ -79,8 +79,9 @@ int lastPlayed = 0;
 // sd card instantiation
 SdFat sd;
 
-// serial comms definitions
+// serial comms
 const int serialPacketSize = 13;
+uint8_t incomingPacket[serialPacketSize];
 
 // secondary board touch variables
 bool thisExternalTouchStatus[numSecondaryBoards][12];
@@ -131,7 +132,8 @@ void setup(){
     digitalWrite(a, LOW); 
   }
 
-  Serial1.begin(9600);
+  Serial1.begin(57600);
+  Serial1.setTimeout(3); // 3ms is more than enough time for a packet to be transferred (should take 2.26ms)
   delay(100);
 }
 
@@ -168,53 +170,55 @@ void readLocalTouchInputs(){
 
 void readRemoteTouchInputs(){
 
-  char incoming;
+  uint8_t numBytesRead;
 
   for(int a=A0; a<A0+numSecondaryBoards; a++){
 
     digitalWrite(a, HIGH);
-    delay(15);
 
-    // only process if we have a full packet available
-    while(Serial1.available() >= serialPacketSize){
+    // try to read a full packet
+    numBytesRead = Serial1.readBytesUntil(0x00, incomingPacket, serialPacketSize);
 
+    // only process a complete packet
+    if(numBytesRead==serialPacketSize){
       // save last status to detect touch / release edges
       for(int i=0; i<12; i++){
         lastExternalTouchStatus[a-A0][i] = thisExternalTouchStatus[a-A0][i];
       }
       
-      incoming = Serial1.read();
-      if(incoming == 'T'){ // ensure we are synced with the packet 'header'
+      if(incomingPacket[0] == 'T'){ // ensure we are synced with the packet 'header'
         for(int i=0; i<12; i++){
-          if(!Serial1.available()){
-            return; // shouldn't get here, but covers us if we run out of data
+          if(incomingPacket[i+1]=='1'){
+            thisExternalTouchStatus[a-A0][i] = true;
           } else {
-            if(Serial1.read()=='1'){
-              thisExternalTouchStatus[a-A0][i] = true;
-            } else {
-              thisExternalTouchStatus[a-A0][i] = false;
-            }
+            thisExternalTouchStatus[a-A0][i] = false;
           }
         }
       } 
-    }
 
-    // now that we have read the remote touch data, merge it with the local data
-    for(int i=0; i<12; i++){
-      if(lastExternalTouchStatus[a-A0][i] != thisExternalTouchStatus[a-A0][i]){
-        touchStatusChanged = true;
+      // now that we have read the remote touch data, merge it with the local data
+      for(int i=0; i<12; i++){
+        if(lastExternalTouchStatus[a-A0][i] != thisExternalTouchStatus[a-A0][i]){
+          touchStatusChanged = true;
+          if(thisExternalTouchStatus[a-A0][i]){
+            // shift remote data up the array by 12 so as not to overwrite local data
+            isNewTouch[i+(12*((a-A0)+1))] = true;
+          } else {
+            isNewRelease[i+(12*((a-A0)+1))] = true;
+          }
+        }
+
+        // add any new touches to the touch count
         if(thisExternalTouchStatus[a-A0][i]){
-          // shift remote data up the array by 12 so as not to overwrite local data
-          isNewTouch[i+(12*((a-A0)+1))] = true;
-        } else {
-          isNewRelease[i+(12*((a-A0)+1))] = true;
+          numTouches++;
         }
       }
 
-      // add any new touches to the touch count
-      if(thisExternalTouchStatus[a-A0][i]){
-        numTouches++;
-      }
+    } else {
+      Serial.print("incomplete packet from secondary board ");
+      Serial.println(a-A0, DEC);
+      Serial.print("number of bytes read was ");
+      Serial.println(numBytesRead);
     }
 
     digitalWrite(a, LOW);

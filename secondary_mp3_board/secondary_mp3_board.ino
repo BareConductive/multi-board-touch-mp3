@@ -61,6 +61,8 @@ const int triggerPin = A0;
 boolean thisTriggerValue = false;
 boolean lastTriggerValue = false;
 
+char touchStatus[12] = {'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'};
+
 void setup(){  
   Wire.begin();
   MPR121.begin(MPR121_ADDR);
@@ -71,6 +73,8 @@ void setup(){
 
   pinMode(triggerPin, INPUT);
   digitalWrite(triggerPin, LOW); // ensure internal pullup is disabled
+
+  pinMode(1, INPUT); // ensure that TX goes out of circuit when the UART is disabled
  
   for(int i=0; i<12; i++){
     MPR121.setTouchThreshold(i, 40);
@@ -90,18 +94,19 @@ void loop(){
 void processInputs() {
   if(MPR121.touchStatusChanged()){    
     MPR121.updateTouchData();
+    for(int i=0; i<12; i++){
+      if(MPR121.isNewTouch(i)){
+        touchStatus[i] = '1';
+      } else if(MPR121.isNewRelease(i)){
+        touchStatus[i] = '0';
+      }
+    }
   }
 }
 
 void sendSerialStatus(){
-  Serial1.begin(9600);
+  Serial1.begin(57600);
   Serial1.write('T');
-    for(int i=0; i<12; i++){
-      if(MPR121.getTouchData(i)){
-        Serial1.write('1');
-      } else {
-        Serial1.write('0');
-      }
-    }
+  Serial1.write(touchStatus, 12);
   Serial1.end();
 }
