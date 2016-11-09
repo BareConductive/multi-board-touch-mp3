@@ -3,7 +3,7 @@
  Bare Conductive Multi Board Touch MP3 player
  ------------------------------------------
  
- primary_board.ino - touch triggered MP3 playback from multiple Touch Boards
+ primary_mp3_board.ino - touch triggered MP3 playback from multiple Touch Boards
 
  Touch electrodes 0 to 11 locally to play TRACK000.MP3 to TRACK011.MP3 from 
  the primary micro SD card. Touch electrodes 0 to 11 on the first secondary board

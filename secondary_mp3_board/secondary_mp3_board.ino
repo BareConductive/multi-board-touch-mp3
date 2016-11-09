@@ -3,11 +3,11 @@
  Bare Conductive Multi Board Touch MP3 player
  ------------------------------------------
  
- secondary_board.ino - interface sending touch data via Serial1 when A0 goes high
+ secondary_mp3_board.ino - sends touch data via Serial1 when A0 goes high
 
- Connect this to a board running primary_board.ino (with a micro SD card having
- TRACK000.MP3 up to TRACK083.MP3). TX on this board must connect to RX on the 
- primary board, and A0 on this board must connect to one of A0 to A5 on the 
+ Connect this to a board running primary_mp3_board.ino (with a micro SD card 
+ having TRACK000.MP3 up to TRACK083.MP3). TX on this board must connect to RX on 
+ the primary board, and A0 on this board must connect to one of A0 to A5 on the 
  primary board. The pin that A0 is connected to defines this boards position in 
  the sequence of secondary boards - A0 is the first secondary board, controlling
  TRACK012.MP3 to TRACK023.MP3, A1 is the second secondary board, controlling
