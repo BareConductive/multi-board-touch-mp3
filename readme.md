@@ -30,7 +30,7 @@ Each board must also be powered, although up to 4 boards can share power by comm
 
 1. Close the Arduino IDE if you have it open.
 1. Download the [.zip](https://github.com/BareConductive/multi-board-touch-mp3/archive/public.zip) or clone the repository to your local machine - if downloading the .zip, extract the contents somewhere that suits you.
-1. Take the **primary_board** folder and the **secondary_board** folder and move them to the **Arduino Sketchbook Folder**. This will be different for each operating system: 
+1. Take the **primary_mp3_board** folder and the **secondary_mp3_board** folder and move them to the **Arduino Sketchbook Folder**. This will be different for each operating system: 
 
 	**Windows**
 	
