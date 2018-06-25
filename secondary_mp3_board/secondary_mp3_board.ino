@@ -64,7 +64,6 @@ boolean lastTriggerValue = false;
 char touchStatus[12] = {'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'};
 
 void setup(){  
-  Wire.begin();
   MPR121.begin(MPR121_ADDR);
   MPR121.setInterruptPin(MPR121_INT);
 
